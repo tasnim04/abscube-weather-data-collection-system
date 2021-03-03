@@ -5,8 +5,11 @@ The primary objective of this project was to create a weather data collection sy
 Version 1 of this data collection system includes the following sensors:
 
 •	DHT22 sensor – measure temperature and humidity 
+
 •	DS18B20 waterproof sensor - measure water temperature
+
 •	Analog UV sensor – measure UV light intensity
+
 •	BMP180 sensor - measure barometric pressure and tenperature
 
 
