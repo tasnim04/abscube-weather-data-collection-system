@@ -14,8 +14,10 @@ spi = spidev.SpiDev()
 spi.open(0,0)
 spi.max_speed_hz = 1000000
 
-""" This function calls on all the sensor functions and returns weather data.
-Note: DHT22 data intentionally left out since sensor connection frequently dropping out. """
+""" 
+This function calls on all the sensor functions and returns weather data.
+Note: DHT22 data intentionally left out since sensor connection frequently dropping out. 
+"""
 
 def getAllSensorData():
     
@@ -37,7 +39,9 @@ def getAllSensorData():
     return timeString,  bmp_temp, bmp_pres, bmp_altLab, bmp_presSL, ds18b20_ext_temp, uv_mV,uv_index                                                        
 
 
-""" This function obtains the temperature and humidity data from DHT22 sensor. """
+"""
+This function obtains the temperature and humidity data from DHT22 sensor.
+"""
 def run_dht22():
     dhtDevice = adafruit_dht.DHT22(board.D16)
     #while True:
@@ -49,9 +53,11 @@ def run_dht22():
     
     return temperature_c, humidity 
 
-""" This function obtains external temperature from the DS19B20 temperature sensor.
-    Note: make sure to enable the 1-Wire interface on the Raspberry Pi in order to communicate with
-    this sensor.  """           
+"""
+This function obtains external temperature from the DS19B20 temperature sensor.
+Note: make sure to enable the 1-Wire interface on the Raspberry Pi in order to communicate with
+this sensor. 
+"""           
 def ds18b20GetData():
     ds18b20Sensor = W1ThermSensor()
     
@@ -59,9 +65,11 @@ def ds18b20GetData():
     
     return tempExt
 
-""" This function returns the temperature, altitude and barometric pressure from the BMP180 sensor
-    Note: make sure to enable the I2C interface on the Raspberry Pi in order to communicate with
-    this sensor. """
+""" 
+This function returns the temperature, altitude and barometric pressure from the BMP180 sensor
+Note: make sure to enable the I2C interface on the Raspberry Pi in order to communicate with
+this sensor. 
+"""
 def bmp180GetData():
     temp = bmp180Sensor.read_temperature()
     pres = bmp180Sensor.read_pressure()
@@ -75,16 +83,20 @@ def bmp180GetData():
  
     return temp, pres, alt, presSeaLevel
 
-""" This function outputs raw data being transmitted from the analog UV sensor to the Analog-to-Digital
-    Converter (ADC) when the UV sensor is connected to the one of the ADC channels. An ADC is necessary
-    since the Raspberry Pi cannot read any analog signals. """
+""" 
+This function outputs raw data being transmitted from the analog UV sensor to the Analog-to-Digital
+Converter (ADC) when the UV sensor is connected to the one of the ADC channels. An ADC is necessary
+since the Raspberry Pi cannot read any analog signals. 
+"""
 def ReadChannel(channel):
     adc = spi.xfer2([1,(8+channel)<<4,0])
     data = ((adc[1]&3) << 8) + adc[2]
     return data
 
-""" This function runs the ReadChannel function three times in order to generate an average of the raw
-    data sent by the UV sensor. The analog value is then converted to mV. """
+""" 
+This function runs the ReadChannel function three times in order to generate an average of the raw
+data sent by the UV sensor. The analog value is then converted to mV.
+"""
 def readSensorUV():
     numOfReadings = 3
     dataSensorUV = 0.0
@@ -95,8 +107,10 @@ def readSensorUV():
     dataSensorUV = (dataSensorUV * (3.3 / 1023.0))*1000;
     return round(dataSensorUV)
            
-""" This function checks the raw analog data average sent by the UV sensor, and compares it with the
-    Vout (in mV) and UV index chart to output the corresponding UV index based on the Vout. """           
+""" 
+This function checks the raw analog data average sent by the UV sensor, and compares it with the
+Vout (in mV) and UV index chart to output the corresponding UV index based on the Vout. 
+"""           
 def indexCalculate(dataSensorUV):
     if dataSensorUV < 227: indexUV = 0
     elif (227 <= dataSensorUV) & (dataSensorUV < 318): indexUV = 1
@@ -112,7 +126,9 @@ def indexCalculate(dataSensorUV):
     else: indexUV = 11
     return indexUV
 
-""" This piece of code is responsible for writing all the acquired data into a .csv file every 15 seconds. """
+""" 
+This piece of code is responsible for writing all the acquired data into a .csv file every 15 seconds.
+"""
 with open("/home/pi/rpi_weather_station.csv", "a") as f:
     while True:
         timing,  bmptemp, bmppres, bmpaltLab, bmppresSL, ds18b20ext_temp, uvmV, uvindex = getAllSensorData()
